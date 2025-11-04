@@ -23,5 +23,5 @@ export class User {
   posts?: Post[];
 
   @Field(() => [CommentEntity])
-  comments: CommentEntity[];
+  comments?: CommentEntity[];
 }
