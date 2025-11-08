@@ -1,5 +1,4 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { connect } from 'http2';
 import { DEFAULT_PAGE_SIZE } from 'src/constants';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UpdatePostInput } from './dto/update-post.input';
@@ -113,5 +112,20 @@ export class PostService {
         },
       },
     });
+  }
+
+  async delete({ postId, userId }: { postId: number; userId: number }) {
+    const authorIdMatched = await this.prisma.post.findUnique({
+      where: {
+        id: postId,
+        authorId: userId,
+      },
+    });
+    if (!authorIdMatched) throw new UnauthorizedException();
+    const result = await this.prisma.post.delete({
+      where: { id: postId, authorId: userId },
+    });
+
+    return !!result;
   }
 }
